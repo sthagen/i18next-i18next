@@ -108,4 +108,71 @@ describe('keysFromSelector', () => {
       expect(keys).toEqual('ns2');
     });
   });
+
+  describe('strict mode (enableSelector: "strict")', () => {
+    // Under strict mode `NsResource` exposes namespaces uniformly (no flattened
+    // primary), so `path[0]` is always a namespace identifier when it matches
+    // the scope's namespace list — including the primary and the single-ns case.
+    it('rewrites a primary-prefixed path in a multi-ns scope', () => {
+      const keys = keysFromSelector(($) => $.ns1.login.welcome, {
+        ns: ['ns1', 'ns2'],
+        enableSelector: 'strict',
+      });
+      expect(keys).toEqual('ns1:login.welcome');
+    });
+
+    it('rewrites a secondary-prefixed path in a multi-ns scope', () => {
+      const keys = keysFromSelector(($) => $.ns2.email.required, {
+        ns: ['ns1', 'ns2'],
+        enableSelector: 'strict',
+      });
+      expect(keys).toEqual('ns2:email.required');
+    });
+
+    it('rewrites when ns is a single string', () => {
+      const keys = keysFromSelector(($) => $.only.foo, {
+        ns: 'only',
+        enableSelector: 'strict',
+      });
+      expect(keys).toEqual('only:foo');
+    });
+
+    it('rewrites when ns is a single-element array', () => {
+      const keys = keysFromSelector(($) => $.only.foo, {
+        ns: ['only'],
+        enableSelector: 'strict',
+      });
+      expect(keys).toEqual('only:foo');
+    });
+
+    it('leaves the path alone when first segment is not in the ns list', () => {
+      // Strict mode still requires path[0] to match a namespace; an unrelated
+      // leading segment is left flat (caller will get a missing-key for it).
+      const keys = keysFromSelector(($) => $.unknown.foo, {
+        ns: ['ns1', 'ns2'],
+        enableSelector: 'strict',
+      });
+      expect(keys).toEqual('unknown.foo');
+    });
+
+    it('respects custom keySeparator and nsSeparator', () => {
+      const keys = keysFromSelector(($) => $.ns1.a.b, {
+        ns: ['ns1', 'ns2'],
+        enableSelector: 'strict',
+        keySeparator: '/',
+        nsSeparator: '|',
+      });
+      expect(keys).toEqual('ns1|a/b');
+    });
+
+    it('does not rewrite when nsSeparator is falsy', () => {
+      // Same fail-safe as the default mode.
+      const keys = keysFromSelector(($) => $.ns1.a, {
+        ns: ['ns1', 'ns2'],
+        enableSelector: 'strict',
+        nsSeparator: false,
+      });
+      expect(keys).toEqual('ns1.a');
+    });
+  });
 });

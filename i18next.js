@@ -466,11 +466,15 @@
     } = selector(createProxy());
     const keySeparator = opts?.keySeparator ?? '.';
     const nsSeparator = opts?.nsSeparator ?? ':';
+    const strict = opts?.enableSelector === 'strict';
     if (path.length > 1 && nsSeparator) {
       const ns = opts?.ns;
-      const nsArray = Array.isArray(ns) ? ns : null;
-      if (nsArray && nsArray.length > 1 && nsArray.slice(1).includes(path[0])) {
-        return `${path[0]}${nsSeparator}${path.slice(1).join(keySeparator)}`;
+      const nsList = strict ? Array.isArray(ns) ? ns : ns ? [ns] : null : Array.isArray(ns) ? ns : null;
+      if (nsList) {
+        const candidates = strict ? nsList : nsList.length > 1 ? nsList.slice(1) : [];
+        if (candidates.includes(path[0])) {
+          return `${path[0]}${nsSeparator}${path.slice(1).join(keySeparator)}`;
+        }
       }
     }
     return path.join(keySeparator);
@@ -1669,6 +1673,7 @@
     nsSeparator: ':',
     pluralSeparator: '_',
     contextSeparator: '_',
+    enableSelector: false,
     partialBundledLanguages: false,
     saveMissing: false,
     updateMissing: false,

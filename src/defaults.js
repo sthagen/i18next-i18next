@@ -19,6 +19,15 @@ export const get = () => ({
   pluralSeparator: '_',
   contextSeparator: '_',
 
+  // Selector API runtime mode. Mirrors the TypeOptions `enableSelector` flag.
+  // - false / true / 'optimize': legacy rule — only a leading *secondary* namespace
+  //   in a multi-element ns array is rewritten as a namespace prefix (v25.8.19)
+  // - 'strict': always treat path[0] as a namespace prefix when it matches the
+  //   scope's namespace list, including the primary and single-ns hooks.
+  //   Pairs with `NsResource` dropping its flattened-primary union at the type
+  //   level. Opt-in; default behavior is unchanged.
+  enableSelector: false,
+
   partialBundledLanguages: false, // allow bundling certain languages that are not remotely fetched
   saveMissing: false, // enable to send missing values
   updateMissing: false, // enable to update default values if different from translated value (only useful on initial development, or when keeping code as source of truth)
