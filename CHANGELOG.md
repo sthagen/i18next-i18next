@@ -1,5 +1,6 @@
-## 26.1.1
+## 26.2.0
 
+- feat(types): new `parseInterpolation` TypeOption (default `true`). When set to `false` in `CustomTypeOptions`, the type-level extractor stops parsing translation strings for `{{variable}}` patterns. Required by `i18next-icu` users — the default extractor mistakes ICU MessageFormat nested-brace plurals like `{count, plural, one {{count} row} other {{count} rows}}` for an interpolation block and demands a phantom variable name. The flag is type-only; runtime interpolation is governed by `InterpolationOptions` and is unaffected. Fixes [i18next-icu#85](https://github.com/i18next/i18next-icu/issues/85).
 - fix(types): expose `enableSelector` on `InitOptions` so `i18next.init({ enableSelector: 'strict' })` typechecks without a module augmentation. The runtime already reads `opts?.enableSelector` from init options; this lands the matching type declaration next to the other selector-resolution knobs. Accepts `false | true | 'optimize' | 'strict'`. Thanks @Faithfinder ([#2431](https://github.com/i18next/i18next/pull/2431))
 
 ## 26.1.0
