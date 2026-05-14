@@ -1,3 +1,7 @@
+## 26.1.1
+
+- fix(types): expose `enableSelector` on `InitOptions` so `i18next.init({ enableSelector: 'strict' })` typechecks without a module augmentation. The runtime already reads `opts?.enableSelector` from init options; this lands the matching type declaration next to the other selector-resolution knobs. Accepts `false | true | 'optimize' | 'strict'`. Thanks @Faithfinder ([#2431](https://github.com/i18next/i18next/pull/2431))
+
 ## 26.1.0
 
 - feat: `enableSelector: 'strict'` (TypeOptions + runtime option). Opt-in mode that drops the flattened-primary form from `NsResource` at the type level — every namespace (primary included) is exposed only under its own key on `$`, uniformly across single- and multi-ns hooks. At runtime, a leading selector path segment matching the scope's namespace list is always rewritten as a namespace prefix, including the primary. Eliminates the silent-miss surface area where `t($ => $.primary.foo)` typechecks but doesn't resolve under the default mode (see [#2429](https://github.com/i18next/i18next/issues/2429)). Backward-compatible: default `enableSelector: false | true | 'optimize'` behavior is unchanged. Note: strict mode is incompatible with the [#2405](https://github.com/i18next/i18next/issues/2405) pattern (keys whose names match sibling namespaces) — those users should stay on default mode.
